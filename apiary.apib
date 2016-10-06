@@ -1,0 +1,51 @@
+FORMAT: 1A
+HOST: http://cxaskapi.apiblueprint.org/
+
+# CX Ask API
+
+CX Ask is an API allowing management of surveys and questionnaires used in CXUP system.
+
+Requires JWT tokens for Bearer authorization.
+
+## Studies Collection [/studies]
+
+### List All Studies [GET]
+
+Lists all studies defined by currently authenticated client.
+
++ Response 200 (application/json)
+
+### Create a New Study [POST]
+
++ Request (application/json)
+
++ Response 201
+            
+## Study [/studies/{study_id}]
+
++ Parameters
+    + study_id (guid)
+
+### Retrieve Study [GET]
+
++ Response 200
+
+### Start/Stop the Study [PUT /studies/{study_id}/started]
+
+Starts or stops the existing study, depending on value passed in a request body.
+
++ Request Start the study (application/json)
+
+        {
+            "started" : true
+        }
+
++ Response 200
+
++ Request Stop the study (application/json)
+
+        {
+            "started" : false
+        }
+
++ Response 200
