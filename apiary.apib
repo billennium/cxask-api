@@ -3,36 +3,61 @@ HOST: http://cxaskapi.apiblueprint.org/
 
 # CX Ask API
 
-CX Ask is an API allowing management of surveys and questionnaires used in CXUP system.
+CX Ask is an API allowing management of studies and survies used in CXUP system.
 
 Requires JWT tokens for Bearer authorization.
+
+## Group Customer Journey Interface
+
+Methods used by Customer Journey module and external systems used for creating Study definitions.
 
 ## Studies Collection [/studies]
 
 ### List All Studies [GET]
 
-Lists all studies defined by currently authenticated client.
+Lists all studies currently authenticated user has access to.
 
 + Response 200 (application/json)
+    + Attributes (array[Study])
 
-### Create a New Study [POST]
+### Create Study [POST]
+
+Creates a new study based on given parameters.
 
 + Request (application/json)
+    + Attributes (Study Request)
 
-+ Response 201
-            
++ Response 201 (application/json)
+    + Attributes
+        + `study_id`: studyid_1 (string, required)
+
 ## Study [/studies/{study_id}]
 
 + Parameters
-    + study_id (guid)
+    + study_id (string)
 
 ### Retrieve Study [GET]
 
+Retrieves a single Study definition.
+
++ Response 200 (application/json)
+    + Attributes (Study)
+
+### Update Study [PUT]
+
+Updates the existing study definition.
+
++ Request (application/json)
+    + Attributes (Study Request)
+
 + Response 200
 
-### Start/Stop the Study [PUT /studies/{study_id}/started]
+### Start/Stop Study [PUT /studies/{study_id}/status/started]
 
 Starts or stops the existing study, depending on value passed in a request body.
+
++ Parameters
+    + study_id (string)
 
 + Request Start the study (application/json)
 
@@ -40,7 +65,7 @@ Starts or stops the existing study, depending on value passed in a request body.
             "started" : true
         }
 
-+ Response 200
++ Response 202
 
 + Request Stop the study (application/json)
 
@@ -48,4 +73,250 @@ Starts or stops the existing study, depending on value passed in a request body.
             "started" : false
         }
 
++ Response 202
+
+### Retrieve Study Status [GET /studies/{study_id}/status]
+
++ Parameters
+    + study_id (string)
+
++ Response 200 (application/json)
+    + Attributes (Study Status)
+
+### Delete Study [DELETE]
+
++ Response 204
+
+## Study Contexts [/studies/{study_id}/contexts]
+
++ Parameters
+    + study_id (string)
+
+### List Study Contexts [GET]
+
++ Response 200 (application/json)
+    + Attributes (array[Study Context])
+
+### Add Study Contexts [POST]
+
++ Request (application/json)
+    + Attributes (array[Study Context])
+
++ Response 201
+
+### Replace Study Contexts [PUT]
+
++ Request (application/json)
+    + Attributes (array[Study Context])
+
 + Response 200
+
+## Channels Collection [/channels]
+
+### List Available Channels [GET]
+
+Lists all channels that can be used in Study request.
+
++ Response 200 (application/json)
+    + Attributes (array[Channel Description])
+
+## Group Channels Interface
+
+Methods used by channels.
+
+## Survey [/surveys/{survey_id}]
+
++ Parameters
+    + survey_id (string)
+
+### Retrieve Survey [GET /surveys/{survey_id}?context_id={context_id}]
+
+Retrieves a single Survey definition, prepared for requesting Channel type.
+
++ Parameters
+    + survey_id (string)
+    + context_id (string, optional)
+
++ Response 200 (application/json)
+    + Attributes (Survey)
+
+### Delete Survey [DELETE]
+
++ Response 204
+
+## Group Data Structures
+
+## Models [/?models]
+
+### Study [HEAD /?study]
+
++ Request (application/json)
+    + Attributes (Study)
+        
++ Response 200
+
+### Study Status [HEAD /?study-status]
+
++ Request (application/json)
+    + Attributes (Study Status)
+        
++ Response 200
+
+### Question [HEAD /?question]
+
++ Request (application/json)
+    + Attributes (Question)
+        
++ Response 200
+
+### Question Answer [HEAD /?question-answer]
+
++ Request (application/json)
+    + Attributes (Question Answer)
+        
++ Response 200
+
+### Question Group [HEAD /?question-group]
+
++ Request (application/json)
+    + Attributes (Question Group)
+        
++ Response 200
+
+### Question Trigger [HEAD /?question-trigger]
+
++ Request (application/json)
+    + Attributes (Question Trigger)
+        
++ Response 200
+
+### Question Condition [HEAD /?question-condition]
+
++ Request (application/json)
+    + Attributes (Question Condition)
+        
++ Response 200
+
+### Study Context [HEAD /?study-context]
+
++ Request (application/json)
+    + Attributes (Study Context)
+        
++ Response 200
+
+### Channel Description [HEAD /?channel-description]
+
++ Request (application/json)
+    + Attributes (Channel Description)
+        
++ Response 200
+
+### Survey [HEAD /?survey]
+
++ Request (application/json)
+    + Attributes (Survey)
+        
++ Response 200
+
+# Data Structures
+
+## Study (object)
++ id: studyid_1 (string, required) - study id.
++ `client_id`: clientid_1 (string, required) - owner id.
++ questions (array) - array of Questions.
++ structure (array) - array of Question Groups.
++ triggers (array) - array of Question Triggers.
++ conditions (array) - array of Question Conditions.
+
+## Study Request (object)
++ questions (array, required)
++ structure (array)
++ triggers (array)
++ conditions (array)
+
+## Study Status (object)
++ id: studyid_1 (string, required)
++ status (enum, required) - current Study status.
+    + Created - Study definition created.
+    + Starting - Study start request received, generating Surveys.
+    + Started - Study ready, accepting answers.
+    + Stopped - Study finished.
++ active_channels (array)
+    + (object)
+        + type: CXform (string, required)
+        + url: `http://cxask.apiblueprint.org/cxform/cxform_survey_id/{context_id}` (string, required)
+
+## Question (object)
++ id: questionid_1 (string, required)
++ content: Jak masz na imię? (string, required)
++ name: firstname (string) - friendly name, not visible to respondents.
++ type (enum, required)
+    + SingleAnswer - select exactly one from available answers.
+    + MultipleAnswers
+    + ShortText
+    + LongText
+    + Label
+    + NPS
++ answers (array) - array of available Question Answers.
++ allow_custom_answer: false (boolean, nullable)
++ custom_answer_content: Inna odpowiedź (string)
+
+## Question Answer (object)
++ id: questionanswerid_1 (string, required)
++ content: Tomasz (string, required)
++ value: tomasz (string)
+
+## Question Group (object)
++ id: groupid_1 (string, required)
++ content: Dane osobowe (string, required)
++ name: group_1 (string) - friendly name, not visible to respondents.
++ questions: questionid_1, questionid_2 (array) - array of Question IDs included in this group.
++ subgroups (array) - array of Question Group items, representing nested groups.
+
+## Question Trigger (object)
++ id: questiontriggerid_1 (string, required)
++ when
+    + question: questionid_1 (string, required) - the Question that will trigger the action.
+    + operator: Equals (enum, required)
+    + value: false (string) - the value the Question's answer will be compared to.
++ action
+    + type (enum, required) - triggered action type.
+        + ShowQuestion - shows Question or Group when triggered.
+        + HideQuestion - hides  Question or Group when triggered.
+    + target: questionid_2 (string, required) - action target. can be a Question or Group ID.
+
+## Question Condition (object)
++ id: questionconditionid_1 (string, required)
++ ask: questionid_1 (string, required)
++ when
+    + property: gender (string, required)
+    + value: female (string, required)
+
+## Study Context (object)
++ id: studycontextid_1 (string, required)
++ `study_id`: studyid_1 (string, required)
++ variables (array)
+    + (object)
+        + name: gender (string)
+        + value: male (string)
+    + (object)
+        + name: region (string)
+        + value: lubelskie (string)
+
+## Channel Description (object)
++ id: channelid_1 (string, required)
++ name: `CXform-default` (string, required)
++ description: Zbierz odpowiedzi przez formularz webowy. (string)
++ type (enum, required)
+    + CXform
+    + CXapp
+    + CXthing
+    + CXbot
+    + CXhuman
+
+## Survey (object)
++ id: surveyid_1 (string, required) - survey ID.
++ `study_id`: studyid_1 (string, required)
++ `channel_id`: channelid_1 (string, required)
++ questions (array)
++ triggers (array)
