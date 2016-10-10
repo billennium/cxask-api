@@ -155,6 +155,13 @@ Retrieves a single Survey definition, prepared for requesting Channel type.
         
 + Response 200
 
+### Study Request [HEAD /?study-request]
+
++ Request (application/json)
+    + Attributes (Study Request)
+        
++ Response 200
+
 ### Study Status [HEAD /?study-status]
 
 + Request (application/json)
@@ -223,6 +230,15 @@ Retrieves a single Survey definition, prepared for requesting Channel type.
 ## Study (object)
 + id: studyid_1 (string, required) - study id.
 + `client_id`: clientid_1 (string, required) - owner id.
++ status (enum, required) - current Study status.
+    + Created - Study definition created.
+    + Starting - Study start request received, generating Surveys.
+    + Started - Study ready, accepting answers.
+    + Stopped - Study finished.
++ channels (array)
+    + (object)
+        + id: 14A88BF0 (string, required)
+        + name: CXform (string, required)
 + questions (array) - array of Questions.
 + structure (array) - array of Question Groups.
 + triggers (array) - array of Question Triggers.
@@ -233,6 +249,11 @@ Retrieves a single Survey definition, prepared for requesting Channel type.
 + structure (array)
 + triggers (array)
 + conditions (array)
++ channels (array)
+    + (object)
+        + channel_id: 14A88BF0 (string, required)
+        + target_group: null (string, nullable)
+        + `target_question`: questionid_1 (string)
 
 ## Study Status (object)
 + id: studyid_1 (string, required)
@@ -313,10 +334,13 @@ Retrieves a single Survey definition, prepared for requesting Channel type.
     + CXthing
     + CXbot
     + CXhuman
++ is_default: true (boolean, required)
 
 ## Survey (object)
 + id: surveyid_1 (string, required) - survey ID.
 + `study_id`: studyid_1 (string, required)
 + `channel_id`: channelid_1 (string, required)
++ url: `http://cx.ask.api/cxform/1ACCD320/{context_id}` (string)
++ `context_url`: `http://cx.ask.api/cxform/1ACCD320/{context_id}` (string)
 + questions (array)
 + triggers (array)
